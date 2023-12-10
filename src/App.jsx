@@ -5,7 +5,7 @@ import { Outlet, Link } from "react-router-dom";
 import { getWord } from './api';
 import './App.css'
 import { UserContext } from './context/use.context';
-import { CategoriesContext } from './context/categories.context';
+import { CategoriesProvider } from './context/categories.context';
 
 function App() {
   const [wordDefinition, setWordDefinition] = useState();
@@ -53,12 +53,12 @@ function App() {
           </li>
         </ul>
       </nav>
-      <CategoriesContext>
+      <CategoriesProvider>
           <div>
           {/* לכאן יכנס התוכן של הניווט */}
           <Outlet />
         </div>
-      </CategoriesContext>
+      </CategoriesProvider>
       
     </>
   )

@@ -2,6 +2,8 @@
 export const categoryReducer = (categories, action) => {
     const { type } = action;
     switch (type) {
+        case 'load':
+            return action.value
         case 'add':
             return [
                 ...categories,

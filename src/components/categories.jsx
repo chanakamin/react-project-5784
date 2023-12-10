@@ -1,8 +1,7 @@
-import React, { useContext, useReducer, useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Outlet, Link } from "react-router-dom";
-import { CategoryContext } from '../context/categories.context';
-import { categories as initialCategories } from '../data/categories';
-import { categoryReducer } from './categories.reducer';
+import { useCategories } from '../context/categories.context';
+import { createCategory, getCategories } from '../api/categories.api';
 
 
 const AddCategory = ({ add }) => {
@@ -21,55 +20,31 @@ const AddCategory = ({ add }) => {
 
 
 export const Categories = () => {
-    // const { categories, addCategory } = useContext(CategoryContext)
-
-    // const [categories, setCategories] = useState(initialCategories);
-
-    // useReducer - יוצר משתנה מסוג state
-    // עם פונקצית reducer
-    // שכל השינויים במתשנה יקראו רק בפונקציה זו
-    // פונקציה הרדיוסר תיקרא ע"י קריאה לפונקציה dispatch
-    // שמטרתה להודיע שקרה משהו
-    const [categories, dispatch] = useReducer(categoryReducer, initialCategories);
+    const {categories, dispatch} = useCategories();
     const [canAdd, setCanAdd] = useState(false);
 
-    const addCategory = (category => {
-        // הודעה על הוספה
-        // הפונקציה מקבלת action - 
-        // אוביקט פעולה שמתאר מה קרה
-        dispatch({
-            type: 'add',
-            newCategory: category,
-        })
+    const addCategory = async (category) => {
+        await createCategory(category);
         setCanAdd(false);
-    })
+        const { data } = await getCategories();
+        dispatch({
+            type: 'load',
+            value: data,
+        })
+    }
 
     const removeCategory = (category) => {
         dispatch({
             type: 'remove',
             id: category.id,
-        })
-        // const newCategories = categories.filter(c => c.id !== category.id);
-        // setCategories(newCategories);
+        });
     }
 
     const editCategory = (category) => {
         dispatch({
             type: 'edit',
             id: category.id,
-        })
-
-        // const newCategory = {
-        //     ...category,
-        //     edit: true,
-        // };
-        // // שכפול של המערך
-        // const newCategories = [...categories];
-        // // מציאת האינדקס של הקטגוריה
-        // const index = newCategories.findIndex(c => c.id === category.id);
-        // // newCategories[index] = newCategory;
-        // newCategories.splice(index, 1, newCategory);
-        // setCategories(newCategories);
+        });
     } 
 
     const saveCategory = (category, newValue) => {
@@ -77,19 +52,7 @@ export const Categories = () => {
             type: 'save',
             id: category.id,
             newValue,
-        })
-        // const newCategory = {
-        //     ...category,
-        //     edit: false,
-        //     category: newValue,
-        // };
-        // // שכפול של המערך
-        // const newCategories = [...categories];
-        // // מציאת האינדקס של הקטגוריה
-        // const index = newCategories.findIndex(c => c.id === category.id);
-        // // newCategories[index] = newCategory;
-        // newCategories.splice(index, 1, newCategory);
-        // setCategories(newCategories);
+        });
     } 
 
     return <div>

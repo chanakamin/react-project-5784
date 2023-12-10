@@ -1,25 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { categories } from '../data/categories';
+import React, { useEffect, useReducer, useContext } from 'react';
+import { getCategories } from '../api/categories.api';
+import { categoryReducer } from './categories.reducer';
 
-export const CategoryContext = React.createContext();
+const CategoryContext = React.createContext();
 
-export const CategoriesContext = (params) => {
-    const [_categories, setCategories] = useState(categories);
+// custom hook - יצירה של פונקצית הוק, שמחזירה את הקונטקסט של הקטגוריות
+export const useCategories = () => useContext(CategoryContext);
+
+
+
+export const CategoriesProvider = (params) => {
+    const [categories, dispatch] = useReducer(categoryReducer, []);
+
+    const loadCategories = async () => {
+        const { data } = await getCategories();
+        dispatch({
+            type: 'load',
+            value: data,
+        })
+    }
 
     useEffect(() => {
-        // load data from server
-    }, [])
-    const addCategory = (category) => {
-        // hhtp request
-        category.id = _categories[_categories.length -1].id + 1;
-        setCategories([...categories, category]);
-    }
+       loadCategories();
+    }, []);
 
-    const contextValue = {
-        categories: _categories,
-        addCategory,
-    }
-    return <CategoryContext.Provider value={contextValue} >
+    const value = {
+        categories,
+        dispatch,
+    };
+    
+    return <CategoryContext.Provider value={value} >
+        {/* מכיל את החלק שנשלח בתוך הקומפוננטה */}
         { params.children }
     </CategoryContext.Provider>
 }
