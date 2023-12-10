@@ -24,9 +24,12 @@ export const CategoriesProvider = (params) => {
        loadCategories();
     }, []);
 
+
+
     const value = {
         categories,
         dispatch,
+        loadCategories,
     };
     
     return <CategoryContext.Provider value={value} >

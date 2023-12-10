@@ -1,7 +1,7 @@
 import React, { useReducer, useState } from 'react';
 import { Outlet, Link } from "react-router-dom";
 import { useCategories } from '../context/categories.context';
-import { createCategory, getCategories } from '../api/categories.api';
+import { createCategory, deleteCategory, updateCategory } from '../api/categories.api';
 
 
 const AddCategory = ({ add }) => {
@@ -20,24 +20,18 @@ const AddCategory = ({ add }) => {
 
 
 export const Categories = () => {
-    const {categories, dispatch} = useCategories();
+    const {categories, dispatch, loadCategories } = useCategories();
     const [canAdd, setCanAdd] = useState(false);
 
     const addCategory = async (category) => {
         await createCategory(category);
         setCanAdd(false);
-        const { data } = await getCategories();
-        dispatch({
-            type: 'load',
-            value: data,
-        })
+        await loadCategories();
     }
 
-    const removeCategory = (category) => {
-        dispatch({
-            type: 'remove',
-            id: category.id,
-        });
+    const removeCategory = async (category) => {
+        await deleteCategory(category.id);
+        await loadCategories();
     }
 
     const editCategory = (category) => {
@@ -47,12 +41,9 @@ export const Categories = () => {
         });
     } 
 
-    const saveCategory = (category, newValue) => {
-        dispatch({
-            type: 'save',
-            id: category.id,
-            newValue,
-        });
+    const saveCategory = async (category, newValue) => {
+        await updateCategory(category.id, newValue);
+        loadCategories();
     } 
 
     return <div>

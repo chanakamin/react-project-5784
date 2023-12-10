@@ -4,16 +4,6 @@ export const categoryReducer = (categories, action) => {
     switch (type) {
         case 'load':
             return action.value
-        case 'add':
-            return [
-                ...categories,
-                {
-                    category: action.newCategory,
-                    id:  categories[categories.length -1].id + 1,
-                }
-            ];
-        case 'remove':
-            return categories.filter(c => c.id !== action.id)
         case 'edit':
             return categories.map(category => {
                 if (category.id === action.id) {
@@ -24,19 +14,6 @@ export const categoryReducer = (categories, action) => {
                 }
                 return category;
             });
-        
-        case 'save':
-            return categories.map(category => {
-                if (category.id === action.id) {
-                    return {
-                        ...category,
-                        edit: false,
-                        category: action.newValue,
-                    }
-                }
-                return category;
-            })
-    
         default:
             return categories;
     }
